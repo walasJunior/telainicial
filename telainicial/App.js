@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function App() {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   // Função para abrir ou fechar o menu de opções
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
+  };
+
+  const images = [
+    require('./src/assets/agenda.jpg'),
+    require('./src/assets/galeria.jpg'),
+    require('./src/assets/icone.jpg'),
+    require('./src/assets/loja.jpg'),
+  ];
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
   };
 
   return (
@@ -30,6 +42,19 @@ export default function App() {
         resizeMode="cover"
         style={styles.imageBackground}
       >
+        <ScrollView
+          contentContainerStyle={styles.imageContainer}
+          horizontal
+        >
+          {images.map((image, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleImageClick(image)}
+            >
+              <Image source={image} style={styles.image} />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
         <View style={styles.content}>
           <View style={styles.topTextContainer}>
             <Text style={[styles.title, styles.textWithBorder]}>INÍCIO</Text>
@@ -44,6 +69,17 @@ export default function App() {
         <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
           <Icon name="bars" size={24} color="white" />
         </TouchableOpacity>
+      )}
+      {selectedImage && (
+        <View style={styles.selectedImageContainer}>
+          <TouchableOpacity
+            onPress={() => setSelectedImage(null)}
+            style={styles.closeButton}
+          >
+            <Icon name="close" size={24} color="white" />
+          </TouchableOpacity>
+          <Image source={selectedImage} style={styles.selectedImage} />
+        </View>
       )}
     </View>
   );
@@ -113,5 +149,27 @@ const styles = StyleSheet.create({
     top: 20,
     left: 0,
     backgroundColor: 'transparent',
+  },
+  imageContainer: {
+    flexDirection: 'row',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    margin: 10,
+  },
+  selectedImageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  selectedImage: {
+    width: 300,
+    height: 300,
   },
 });
