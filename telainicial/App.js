@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function App() {
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [isProfileOpen, setProfileOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Função para abrir ou fechar o menu de opções
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
 
-  const images = [
-    require('./src/assets/agenda.jpg'),
-    require('./src/assets/galeria.jpg'),
-    require('./src/assets/icone.jpg'),
-    require('./src/assets/loja.jpg'),
+  const toggleProfile = () => {
+    setProfileOpen(!isProfileOpen);
+  };
+
+  const imageInfo = [
+    { image: require('./src/assets/agenda.png'), name: 'Agenda' },
+    { image: require('./src/assets/galeria.png'), name: 'Galeria' },
+    { image: require('./src/assets/icone.png'), name: 'Ícone' },
+    { image: require('./src/assets/loja.png'), name: 'Loja' },
   ];
 
   const handleImageClick = (image) => {
@@ -26,7 +30,6 @@ export default function App() {
     <View style={styles.container}>
       {isMenuOpen && (
         <View style={styles.menuContainer}>
-          {/* Conteúdo do menu de opções */}
           <TouchableOpacity onPress={toggleMenu} style={styles.closeButton}>
             <Icon name="close" size={24} color="white" />
           </TouchableOpacity>
@@ -37,39 +40,61 @@ export default function App() {
           </View>
         </View>
       )}
+      {isProfileOpen && (
+        <View style={styles.profileContainer}>
+          <TouchableOpacity onPress={toggleProfile} style={styles.closeButton}>
+            <Icon name="close" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.profileText}>Nome do Usuário</Text>
+          <Text style={styles.profileText}>Email do Usuário</Text>
+        </View>
+      )}
       <ImageBackground
         source={require('./src/assets/realcangaiba.jpeg')}
         resizeMode="cover"
         style={styles.imageBackground}
       >
-        <ScrollView
-          contentContainerStyle={styles.imageContainer}
-          horizontal
-        >
-          {images.map((image, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleImageClick(image)}
-            >
-              <Image source={image} style={styles.image} />
-            </TouchableOpacity>
-          ))}
+        <View style={styles.topContainer}>
+          <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
+            <Icon name="bars" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={styles.startTextContainer}>
+            <Text style={[styles.title, styles.textWithBorder, styles.topBorder]}>INÍCIO</Text>
+          </View>
+          <TouchableOpacity onPress={toggleProfile} style={styles.profileButton}>
+            <Icon name="user" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={styles.imageContainer}>
+          <View style={styles.imageRow}>
+            {imageInfo.slice(0, 2).map((item, index) => (
+              <View key={index} style={styles.imageItem}>
+                <TouchableOpacity
+                  onPress={() => handleImageClick(item.image)}
+                >
+                  <Image source={item.image} style={styles.image} />
+                </TouchableOpacity>
+                <Text style={styles.imageText}>{item.name}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={styles.imageRow}>
+            {imageInfo.slice(2).map((item, index) => (
+              <View key={index} style={styles.imageItem}>
+                <TouchableOpacity
+                  onPress={() => handleImageClick(item.image)}
+                >
+                  <Image source={item.image} style={styles.image} />
+                </TouchableOpacity>
+                <Text style={styles.imageText}>{item.name}</Text>
+              </View>
+            ))}
+          </View>
         </ScrollView>
-        <View style={styles.content}>
-          <View style={styles.topTextContainer}>
-            <Text style={[styles.title, styles.textWithBorder]}>INÍCIO</Text>
-            <Text style={[styles.title, styles.textWithBorder]}>OUTRO TEXTO</Text>
-          </View>
-          <View style={styles.bottomTextContainer}>
-            <Text style={[styles.title, styles.textWithBorder]}>REAL CANGAÍBA</Text>
-          </View>
+        <View style={styles.bottomTextContainer}>
+          <Text style={[styles.title, styles.textWithBorder, styles.bottomText]}>REAL CANGAÍBA</Text>
         </View>
       </ImageBackground>
-      {!isMenuOpen && (
-        <TouchableOpacity onPress={toggleMenu} style={styles.menuButton}>
-          <Icon name="bars" size={24} color="white" />
-        </TouchableOpacity>
-      )}
       {selectedImage && (
         <View style={styles.selectedImageContainer}>
           <TouchableOpacity
@@ -92,11 +117,17 @@ const styles = StyleSheet.create({
   imageBackground: {
     flex: 1,
   },
-  content: {
-    flex: 1,
-    justifyContent: 'space-between',
+  topContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+  },
+  topBorder: {
+    borderTopWidth: 5,
+  },
+  startTextContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 24,
@@ -104,36 +135,41 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-  topTextContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  bottomTextContainer: {
-    paddingVertical: 20,
-  },
   textWithBorder: {
     padding: 10,
     borderWidth: 5,
     borderColor: 'orange',
-    marginHorizontal: 10,
   },
   menuButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
     backgroundColor: 'transparent',
   },
   menuContainer: {
     position: 'absolute',
     top: 0,
-    left: -200, 
+    right: 0,
     width: 200,
     height: '100%',
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  profileButton: {
+    backgroundColor: 'transparent',
+  },
+  profileContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 200,
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileText: {
+    fontSize: 18,
+    color: 'white',
+    marginBottom: 10,
   },
   optionContainer: {
     backgroundColor: 'white',
@@ -147,16 +183,30 @@ const styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     top: 20,
-    left: 0,
+    right: 20,
     backgroundColor: 'transparent',
   },
   imageContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingTop: 20,
+  },
+  imageRow: {
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  imageItem: {
+    alignItems: 'center',
+    marginHorizontal: 20,
   },
   image: {
     width: 100,
     height: 100,
-    margin: 10,
+    marginTop: 50, 
+  },
+  imageText: {
+    color: 'white',
+    marginTop: 10, 
   },
   selectedImageContainer: {
     position: 'absolute',
@@ -171,5 +221,13 @@ const styles = StyleSheet.create({
   selectedImage: {
     width: 300,
     height: 300,
+  },
+  bottomTextContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 20, 
+  },
+  bottomText: {
+    borderBottomWidth: 5,
   },
 });
